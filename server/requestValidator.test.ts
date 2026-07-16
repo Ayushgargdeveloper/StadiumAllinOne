@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { MAX_ASSISTANT_INPUT_LENGTH } from "../src/constants";
+import { MAX_ASSISTANT_INPUT_LENGTH } from "../src/shared/config/assistant";
 import { validateAssistantRequestBody } from "./requestValidator";
 
 describe("validateAssistantRequestBody", () => {

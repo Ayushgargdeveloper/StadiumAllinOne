@@ -1,5 +1,5 @@
-import { DEFAULT_LANGUAGE, MAX_ASSISTANT_INPUT_LENGTH } from "../constants";
-import { stadiumContext } from "../data/stadiumData";
+import { DEFAULT_LANGUAGE, MAX_ASSISTANT_INPUT_LENGTH } from "../config/assistant";
+import { stadiumContext } from "../stadium/stadiumData";
 import {
   assistantIntents,
   supportedLanguages,
@@ -7,7 +7,7 @@ import {
   type AssistantResult,
   type StadiumAIResponse,
   type SupportedLanguage
-} from "../types";
+} from "../contracts/stadium";
 
 const intentKeywords: Record<AssistantIntent, readonly string[]> = {
   navigation: ["gate", "seat", "section", "route", "navigate", "navigation", "where", "entrada", "porte"],
@@ -77,7 +77,7 @@ const recommendedActions: Record<AssistantIntent, string> = {
   operations: "Escalate the concern to the operations desk before redirecting fans or changing queues."
 };
 
-const alternativeLocations: Partial<Record<AssistantIntent, string>> = {
+const alternativeLocations: Record<AssistantIntent, string> = {
   navigation: "Gate B",
   crowd: "Gate B",
   accessibility: "Accessible Entrance E",

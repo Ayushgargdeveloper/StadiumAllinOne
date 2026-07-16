@@ -1,4 +1,5 @@
-import { type AssistantApiRequestBody, type StadiumAIResponse, type SupportedLanguage } from "../types";
+import { type AssistantApiRequestBody, type StadiumAIResponse, type SupportedLanguage } from "../../../shared/contracts/stadium";
+import { validateStadiumAIResponse } from "../../../shared/validation/stadiumAIResponse";
 
 export class AssistantClientError extends Error {
   constructor(message: string) {
@@ -24,7 +25,12 @@ export async function requestAssistantResponse(
     throw new AssistantClientError(readErrorMessage(payload));
   }
 
-  return payload as StadiumAIResponse;
+  const validatedPayload = validateStadiumAIResponse(payload);
+  if (validatedPayload === null) {
+    throw new AssistantClientError("Assistant returned an invalid response.");
+  }
+
+  return validatedPayload;
 }
 
 function readErrorMessage(payload: unknown): string {

@@ -1,4 +1,4 @@
-import { crowdLocations } from "../data/stadiumData";
+import { crowdLocations } from "../../shared/stadium/stadiumData";
 
 export function CrowdDecisionSupport() {
   return (

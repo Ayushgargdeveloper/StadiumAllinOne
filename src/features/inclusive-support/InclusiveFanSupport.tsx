@@ -1,4 +1,4 @@
-import { inclusiveSupportGroups } from "../data/stadiumData";
+import { inclusiveSupportGroups } from "../../shared/stadium/stadiumData";
 
 export function InclusiveFanSupport() {
   return (

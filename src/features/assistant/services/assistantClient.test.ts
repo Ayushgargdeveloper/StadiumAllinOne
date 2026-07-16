@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { requestAssistantResponse, AssistantClientError } from "./assistantClient";
-import { type StadiumAIResponse } from "../types";
+import { type StadiumAIResponse } from "../../../shared/contracts/stadium";
 
 const aiResponse: StadiumAIResponse = {
   answer: "Go to Gate B.",
@@ -34,6 +34,17 @@ describe("assistantClient", () => {
     } satisfies Partial<Response>);
 
     await expect(requestAssistantResponse("", "en", fetcher)).rejects.toThrow(AssistantClientError);
+  });
+
+  it("throws a safe client error when a successful endpoint payload is malformed", async () => {
+    const fetcher = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ answer: "Missing required structured fields." })
+    } satisfies Partial<Response>);
+
+    await expect(requestAssistantResponse("Where is Gate B?", "en", fetcher)).rejects.toThrow(
+      "Assistant returned an invalid response."
+    );
   });
 
   it("uses a generic error when the endpoint payload is malformed", async () => {

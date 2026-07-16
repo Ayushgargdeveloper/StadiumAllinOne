@@ -1,4 +1,4 @@
-import { operationsAlerts } from "../data/stadiumData";
+import { operationsAlerts } from "../../shared/stadium/stadiumData";
 
 export function OperationsAlertPanel() {
   return (

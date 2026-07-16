@@ -10,6 +10,19 @@ StadiumPulse AI is a lightweight GenAI-enabled stadium operations assistant. It 
 
 The app keeps the existing crowd, alerts, and inclusive support modules as compact typed operational context. It does not claim live stadium sensors, emergency-system integration, production FIFA partnership, real ticketing feeds, maps, charts, or guaranteed real-time data.
 
+## Evaluation Criteria Evidence
+
+| Criterion | Repository evidence |
+| --- | --- |
+| Code Quality | Feature-first modules with public entry points; platform-neutral shared domain and contracts; thin Vercel adapter; strict TypeScript options; strict ESLint; typed API errors; automated CI quality gate. |
+| Security | Server-only Gemini key; method, media-type, size, shape, language, and model-output validation; bounded rate limiting; provider timeout; untrusted prompt-data delimiting; safe errors; CSP and browser security headers. |
+| Efficiency | Only React and React DOM at runtime; native server-side `fetch`; no AI SDK in the browser; no polling or background timers; production JavaScript is 159.67 kB before gzip and 50.92 kB after gzip. |
+| Testing | 70 tests across 13 files; 100% statements, functions, and lines; 98.18% branches; enforced minimum thresholds of 98% statements/functions/lines and 95% branches. |
+| Accessibility | Semantic regions and headings; explicit form labels and descriptions; keyboard focus styles; loading and fallback announcements with `aria-live`, `aria-busy`, and status roles; automated `jest-axe` coverage. |
+| Problem Statement Alignment | Server-side GenAI decision support for navigation, crowd pressure, accessibility, transportation, medical help, sustainability, volunteers, and venue operations, with English, Spanish, and French output. |
+
+Final verification is reproducible with `npm run quality` and `npm audit --audit-level=moderate`. The same gates run in `.github/workflows/ci.yml` for pull requests and pushes to `main`.
+
 ## GenAI Architecture
 
 - Frontend React form collects a stadium question and selected response language.
@@ -20,6 +33,29 @@ The app keeps the existing crowd, alerts, and inclusive support modules as compa
 - Gemini is instructed to return JSON only.
 - The returned JSON is validated against the shared `StadiumAIResponse` shape before being sent to the UI.
 - If the API key is missing, Gemini fails, times out, or returns invalid JSON, the endpoint returns the offline fallback response.
+
+## Project Architecture
+
+```text
+src/
+|-- features/
+|   |-- assistant/
+|   |   |-- components/
+|   |   `-- services/
+|   |-- crowd/
+|   |-- inclusive-support/
+|   `-- operations/
+|-- shared/
+|   |-- assistant/
+|   |-- config/
+|   |-- contracts/
+|   |-- stadium/
+|   `-- validation/
+|-- App.tsx
+`-- main.tsx
+```
+
+`App.tsx` composes features through their public `index.ts` entry points. Feature modules own their UI, tests, and feature-specific behavior. Shared modules own cross-runtime contracts, configuration, validation, and typed stadium context used by both the browser and server. The API and server layers do not import React components, and shared modules do not depend on feature UI.
 
 ## Structured Decision Output
 
@@ -67,6 +103,8 @@ For local serverless endpoint testing, run the project with a Vercel-compatible 
 3. Do not expose the key through any `VITE_` variable.
 4. Verify `/api/assistant` returns `sourceMode: "gemini"` when the key is valid and `sourceMode: "offline-fallback"` when Gemini is unavailable.
 
+The committed `vercel.json` applies a same-origin Content Security Policy, anti-framing protection, MIME sniffing protection, a privacy-preserving referrer policy, restricted browser permissions, and HTTPS transport security.
+
 ## Commands
 
 ```bash
@@ -74,8 +112,11 @@ npm run lint
 npm run test
 npm run coverage
 npm run build
+npm run quality
 npm audit
 ```
+
+`npm run quality` is the local pre-submission gate. It runs linting, the full test suite with enforced coverage thresholds, TypeScript compilation, and the production Vite build. GitHub Actions runs the same gates from a locked `npm ci` install on every pull request and every push to `main`, then rejects moderate-or-higher dependency vulnerabilities.
 
 ## Security Notes
 
@@ -88,6 +129,11 @@ npm audit
 - Model output must validate before it reaches the frontend.
 - User questions, model responses, and secrets are not logged.
 - The UI does not use `dangerouslySetInnerHTML`, `eval`, or dynamic code execution.
+- Production responses use restrictive browser security headers from `vercel.json`.
+- Public assistant requests are rate-limited before provider work begins.
+- The default limiter has bounded in-memory state, and the handler exposes an injectable hook for distributed production backing.
+- API failures use stable error codes and include a request ID for safe diagnosis.
+- User questions are serialized as untrusted JSON inside the constrained model prompt.
 
 ## Efficiency Notes
 

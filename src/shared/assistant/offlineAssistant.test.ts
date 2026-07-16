@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { MAX_ASSISTANT_INPUT_LENGTH } from "../constants";
-import { assistantIntents } from "../types";
+import { MAX_ASSISTANT_INPUT_LENGTH } from "../config/assistant";
+import { assistantIntents } from "../contracts/stadium";
 import {
   detectIntent,
   generateAssistantResponse,
   generateOfflineAssistantResponse,
   sanitizeAssistantInput,
   validateLanguage
-} from "./assistant";
+} from "./offlineAssistant";
 
 const intentPrompts = {
   navigation: "Which gate route gets me to section 120?",

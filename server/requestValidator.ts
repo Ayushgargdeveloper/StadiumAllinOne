@@ -1,6 +1,6 @@
-import { MAX_ASSISTANT_INPUT_LENGTH } from "../src/constants";
-import { supportedLanguages, type AssistantApiRequestBody, type SupportedLanguage } from "../src/types";
-import { sanitizeAssistantInput } from "../src/utils/assistant";
+import { sanitizeAssistantInput } from "../src/shared/assistant/offlineAssistant";
+import { MAX_ASSISTANT_INPUT_LENGTH } from "../src/shared/config/assistant";
+import { supportedLanguages, type AssistantApiRequestBody, type SupportedLanguage } from "../src/shared/contracts/stadium";
 
 export type ValidatedAssistantRequest = {
   question: string;

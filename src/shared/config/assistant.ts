@@ -1,4 +1,4 @@
-import { supportedLanguages, type SupportedLanguage } from "./types";
+import { supportedLanguages, type SupportedLanguage } from "../contracts/stadium";
 
 export const MAX_ASSISTANT_INPUT_LENGTH = 220;
 export const DEFAULT_LANGUAGE: SupportedLanguage = "en";

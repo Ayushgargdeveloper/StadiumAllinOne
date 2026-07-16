@@ -1,8 +1,8 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { MAX_ASSISTANT_INPUT_LENGTH } from "../constants";
-import { type StadiumAIResponse } from "../types";
+import { MAX_ASSISTANT_INPUT_LENGTH } from "../../../shared/config/assistant";
+import { type StadiumAIResponse } from "../../../shared/contracts/stadium";
 import { requestAssistantResponse } from "../services/assistantClient";
 import { GenAIStadiumAssistant } from "./GenAIStadiumAssistant";
 

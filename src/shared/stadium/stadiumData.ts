@@ -1,4 +1,4 @@
-import type { CrowdLocation, InclusiveSupportGroup, OperationsAlert, StadiumContext } from "../types";
+import type { CrowdLocation, InclusiveSupportGroup, OperationsAlert, StadiumContext } from "../contracts/stadium";
 
 export const stadiumContext: StadiumContext = {
   navigation: "Gate B has the clearest route to sections 120-138; use the north concourse signs.",

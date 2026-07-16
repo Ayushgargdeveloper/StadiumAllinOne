@@ -1,8 +1,8 @@
 import { FormEvent, useState } from "react";
-import { LANGUAGE_LABELS, MAX_ASSISTANT_INPUT_LENGTH, SUPPORTED_LANGUAGE_OPTIONS } from "../constants";
+import { LANGUAGE_LABELS, MAX_ASSISTANT_INPUT_LENGTH, SUPPORTED_LANGUAGE_OPTIONS } from "../../../shared/config/assistant";
+import { type StadiumAIResponse, type SupportedLanguage } from "../../../shared/contracts/stadium";
 import { requestAssistantResponse } from "../services/assistantClient";
-import { type StadiumAIResponse, type SupportedLanguage } from "../types";
-import { generateOfflineAssistantResponse, validateLanguage } from "../utils/assistant";
+import { generateOfflineAssistantResponse, validateLanguage } from "../../../shared/assistant/offlineAssistant";
 
 const initialResponse: StadiumAIResponse = {
   answer: "Ask about navigation, crowd levels, accessibility, transportation, medical help, sustainability, or operations support.",

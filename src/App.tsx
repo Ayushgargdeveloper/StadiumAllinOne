@@ -1,7 +1,7 @@
-import { CrowdDecisionSupport } from "./components/CrowdDecisionSupport";
-import { GenAIStadiumAssistant } from "./components/GenAIStadiumAssistant";
-import { InclusiveFanSupport } from "./components/InclusiveFanSupport";
-import { OperationsAlertPanel } from "./components/OperationsAlertPanel";
+import { GenAIStadiumAssistant } from "./features/assistant";
+import { CrowdDecisionSupport } from "./features/crowd";
+import { InclusiveFanSupport } from "./features/inclusive-support";
+import { OperationsAlertPanel } from "./features/operations";
 
 export function App() {
   return (
