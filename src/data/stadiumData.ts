@@ -7,7 +7,7 @@ export const stadiumContext: StadiumContext = {
   transportation: "Transport Exit T connects to public rail and accessible shuttle pickup.",
   medical: "The medical assistance desk is beside Section 112 near the quiet zone.",
   sustainability: "Water refill is available beside Food Zone F, with waste sorting at each concourse island.",
-  staff: "Venue volunteers should escalate crowd concerns to the operations desk before redirecting fans."
+  operations: "Venue volunteers should escalate crowd concerns to the operations desk before redirecting fans."
 };
 
 export const crowdLocations: readonly CrowdLocation[] = [

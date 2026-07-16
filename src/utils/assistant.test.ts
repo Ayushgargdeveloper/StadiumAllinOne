@@ -4,6 +4,7 @@ import { assistantIntents } from "../types";
 import {
   detectIntent,
   generateAssistantResponse,
+  generateOfflineAssistantResponse,
   sanitizeAssistantInput,
   validateLanguage
 } from "./assistant";
@@ -15,7 +16,7 @@ const intentPrompts = {
   transportation: "Which transport exit connects to rail?",
   medical: "Where is medical first aid help?",
   sustainability: "Where can I refill water and recycle waste?",
-  staff: "What should a volunteer staff member do?"
+  operations: "What should a volunteer staff member do?"
 } as const;
 
 describe("assistant utilities", () => {
@@ -23,9 +24,10 @@ describe("assistant utilities", () => {
     expect(sanitizeAssistantInput(" \u0000Gate A\u001F route\u007F ")).toBe("Gate A route");
   });
 
-  it("rejects empty input", () => {
+  it("rejects empty input with a structured fallback response", () => {
     const result = generateAssistantResponse("", "en");
     expect(result).toMatchObject({ status: "error", reason: "empty" });
+    expect(result.structuredResponse).toMatchObject({ intent: "unknown", sourceMode: "offline-fallback" });
   });
 
   it("rejects whitespace-only input", () => {
@@ -64,11 +66,21 @@ describe("assistant utilities", () => {
   it("returns fallback for unknown intent", () => {
     const result = generateAssistantResponse("I want a souvenir scarf", "en");
     expect(result).toMatchObject({ status: "error", reason: "unknown-intent" });
+    expect(result.structuredResponse.recommendedAction).toContain("Ask a stadium operations question");
   });
 
   it("generates multilingual responses", () => {
     expect(generateAssistantResponse("gate route", "en").response).toContain("Navigation recommendation");
-    expect(generateAssistantResponse("gate route", "es").response).toContain("Recomendación de navegación");
+    expect(generateAssistantResponse("gate route", "es").response).toContain("Recomendacion de navegacion");
     expect(generateAssistantResponse("gate route", "fr").response).toContain("Recommandation de navigation");
+  });
+
+  it("generates a typed offline fallback response", () => {
+    expect(generateOfflineAssistantResponse("crowd queue", "en")).toMatchObject({
+      intent: "crowd",
+      urgency: "high",
+      targetUser: "staff",
+      sourceMode: "offline-fallback"
+    });
   });
 });

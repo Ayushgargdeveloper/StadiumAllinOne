@@ -10,8 +10,8 @@ export function App() {
         <p className="eyebrow">FIFA World Cup 2026 stadium operations</p>
         <h1>StadiumPulse AI</h1>
         <p>
-          A lightweight offline GenAI-enabled assistant for fans, volunteers, staff, and organizers managing navigation,
-          crowd pressure, accessibility, transportation, sustainability, and venue decisions.
+          A lightweight GenAI-enabled assistant for fans, volunteers, staff, and organizers managing navigation, crowd
+          pressure, accessibility, transportation, sustainability, and venue decisions with safe offline fallback.
         </p>
       </header>
       <main>

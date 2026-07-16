@@ -1,0 +1,37 @@
+import { type AssistantApiRequestBody, type StadiumAIResponse, type SupportedLanguage } from "../types";
+
+export class AssistantClientError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "AssistantClientError";
+  }
+}
+
+export async function requestAssistantResponse(
+  question: string,
+  language: SupportedLanguage,
+  fetcher: typeof fetch = fetch
+): Promise<StadiumAIResponse> {
+  const body: AssistantApiRequestBody = { question, language };
+  const response = await fetcher("/api/assistant", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  });
+
+  const payload = await response.json() as unknown;
+  if (!response.ok) {
+    throw new AssistantClientError(readErrorMessage(payload));
+  }
+
+  return payload as StadiumAIResponse;
+}
+
+function readErrorMessage(payload: unknown): string {
+  if (typeof payload === "object" && payload !== null && "error" in payload) {
+    const error = payload.error;
+    return typeof error === "string" ? error : "Assistant request failed.";
+  }
+
+  return "Assistant request failed.";
+}

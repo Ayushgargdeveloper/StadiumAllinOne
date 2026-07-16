@@ -153,6 +153,11 @@ button:hover {
   background: #075f70;
 }
 
+button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
 .assistant-response {
   margin-top: 18px;
   border-left: 4px solid #0b7285;
@@ -162,6 +167,21 @@ button:hover {
 
 .assistant-response p {
   margin: 0;
+}
+
+.assistant-status {
+  color: #7c2d12;
+  font-weight: 800;
+  margin-bottom: 10px !important;
+}
+
+.decision-list {
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  margin-top: 14px;
+}
+
+.decision-list div:last-child {
+  grid-column: 1 / -1;
 }
 
 .location-grid,

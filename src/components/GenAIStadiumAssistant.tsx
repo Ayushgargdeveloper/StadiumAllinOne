@@ -1,16 +1,39 @@
 import { FormEvent, useState } from "react";
 import { LANGUAGE_LABELS, MAX_ASSISTANT_INPUT_LENGTH, SUPPORTED_LANGUAGE_OPTIONS } from "../constants";
-import { generateAssistantResponse } from "../utils/assistant";
+import { requestAssistantResponse } from "../services/assistantClient";
+import { type StadiumAIResponse, type SupportedLanguage } from "../types";
+import { generateOfflineAssistantResponse, validateLanguage } from "../utils/assistant";
+
+const initialResponse: StadiumAIResponse = {
+  answer: "Ask about navigation, crowd levels, accessibility, transportation, medical help, sustainability, or operations support.",
+  intent: "unknown",
+  recommendedAction: "Enter a stadium operations question and generate a recommendation.",
+  urgency: "low",
+  targetUser: "fan",
+  sourceMode: "offline-fallback"
+};
 
 export function GenAIStadiumAssistant() {
   const [question, setQuestion] = useState("");
-  const [language, setLanguage] = useState("en");
-  const [response, setResponse] = useState("Ask about navigation, crowd levels, accessibility, transportation, medical help, sustainability, or staff support.");
+  const [language, setLanguage] = useState<SupportedLanguage>("en");
+  const [response, setResponse] = useState<StadiumAIResponse>(initialResponse);
+  const [statusMessage, setStatusMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const result = generateAssistantResponse(question, language);
-    setResponse(result.response);
+    setIsLoading(true);
+    setStatusMessage("");
+
+    try {
+      const result = await requestAssistantResponse(question, language);
+      setResponse(result);
+    } catch {
+      setResponse(generateOfflineAssistantResponse(question, language));
+      setStatusMessage("Using offline fallback because the secure AI endpoint is unavailable.");
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -20,7 +43,7 @@ export function GenAIStadiumAssistant() {
         <h2 id="assistant-heading">Multilingual GenAI Stadium Assistant</h2>
       </div>
       <p id="assistant-help" className="section-copy">
-        StadiumPulse AI demonstrates a safe offline GenAI workflow using intent recognition, contextual stadium information retrieval, multilingual response generation, and operational decision-support templates.
+        StadiumPulse AI sends validated stadium questions to a secure server-side Gemini endpoint and falls back to a safe offline engine when AI is unavailable.
       </p>
       <form className="assistant-form" onSubmit={handleSubmit}>
         <label htmlFor="assistant-question">Stadium question</label>
@@ -35,7 +58,11 @@ export function GenAIStadiumAssistant() {
         />
         <div className="form-row">
           <label htmlFor="assistant-language">Response language</label>
-          <select id="assistant-language" value={language} onChange={(event) => setLanguage(event.target.value)}>
+          <select
+            id="assistant-language"
+            value={language}
+            onChange={(event) => setLanguage(validateLanguage(event.target.value))}
+          >
             {SUPPORTED_LANGUAGE_OPTIONS.map((option) => (
               <option key={option} value={option}>
                 {LANGUAGE_LABELS[option]}
@@ -46,11 +73,46 @@ export function GenAIStadiumAssistant() {
         <p id="assistant-count" className="character-count">
           {question.length} / {MAX_ASSISTANT_INPUT_LENGTH} characters
         </p>
-        <button type="submit">Generate recommendation</button>
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? "Generating recommendation..." : "Generate recommendation"}
+        </button>
       </form>
-      <div className="assistant-response" aria-live="polite">
+      <div className="assistant-response" aria-live="polite" aria-busy={isLoading}>
         <h3>Generated recommendation</h3>
-        <p>{response}</p>
+        {statusMessage.length > 0 && (
+          <p className="assistant-status" role="status">
+            {statusMessage}
+          </p>
+        )}
+        <p>{response.answer}</p>
+        <dl className="decision-list">
+          <div>
+            <dt>Intent</dt>
+            <dd>{response.intent}</dd>
+          </div>
+          <div>
+            <dt>Urgency</dt>
+            <dd>{response.urgency}</dd>
+          </div>
+          <div>
+            <dt>Target user</dt>
+            <dd>{response.targetUser}</dd>
+          </div>
+          <div>
+            <dt>Source mode</dt>
+            <dd>{response.sourceMode}</dd>
+          </div>
+          <div>
+            <dt>Recommended action</dt>
+            <dd>{response.recommendedAction}</dd>
+          </div>
+          {response.alternativeLocation !== undefined && (
+            <div>
+              <dt>Alternative location</dt>
+              <dd>{response.alternativeLocation}</dd>
+            </div>
+          )}
+        </dl>
       </div>
     </section>
   );
