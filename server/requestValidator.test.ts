@@ -8,15 +8,23 @@ describe("validateAssistantRequestBody", () => {
   });
 
   it("rejects missing questions", () => {
-    expect(validateAssistantRequestBody({ language: "en" })).toMatchObject({ valid: false, error: "Question is required." });
+    expect(validateAssistantRequestBody({ language: "en" })).toMatchObject({
+      valid: false,
+      error: "Question is required."
+    });
   });
 
   it("rejects empty questions", () => {
-    expect(validateAssistantRequestBody({ question: "   ", language: "en" })).toMatchObject({ valid: false, error: "Question cannot be empty." });
+    expect(validateAssistantRequestBody({ question: "   ", language: "en" })).toMatchObject({
+      valid: false,
+      error: "Question cannot be empty."
+    });
   });
 
   it("rejects oversized questions", () => {
-    expect(validateAssistantRequestBody({ question: "a".repeat(MAX_ASSISTANT_INPUT_LENGTH + 1), language: "en" })).toMatchObject({
+    expect(
+      validateAssistantRequestBody({ question: "a".repeat(MAX_ASSISTANT_INPUT_LENGTH + 1), language: "en" })
+    ).toMatchObject({
       valid: false,
       statusCode: 413
     });

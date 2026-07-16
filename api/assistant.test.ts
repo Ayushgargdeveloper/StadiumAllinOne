@@ -55,6 +55,7 @@ describe("assistantHandler", () => {
       body: { error: "Method not allowed.", code: "METHOD_NOT_ALLOWED", requestId: "req-method" }
     });
     expect(response.captured.headers["X-Request-Id"]).toBe("req-method");
+    expect(response.captured.headers.Allow).toBe("POST");
   });
 
   it("rejects non-JSON content types", async () => {
@@ -65,9 +66,17 @@ describe("assistantHandler", () => {
 
   it("accepts uppercase content-type header arrays", async () => {
     const response = createResponse();
-    await assistantHandler({ method: "POST", headers: { "Content-Type": ["Application/JSON; charset=utf-8"] }, body: { question: "Gate route", language: "en" } }, response, {
-      geminiApiKey: undefined
-    });
+    await assistantHandler(
+      {
+        method: "POST",
+        headers: { "Content-Type": ["Application/JSON; charset=utf-8"] },
+        body: { question: "Gate route", language: "en" }
+      },
+      response,
+      {
+        geminiApiKey: undefined
+      }
+    );
     expect(response.captured).toMatchObject({ statusCode: 200 });
   });
 
@@ -101,9 +110,13 @@ describe("assistantHandler", () => {
 
   it("rejects oversized validated questions with a typed request-too-large error", async () => {
     const response = createResponse();
-    await assistantHandler(postRequest({ question: "x".repeat(MAX_ASSISTANT_INPUT_LENGTH + 1), language: "en" }), response, {
-      createRequestId: () => "req-question-too-large"
-    });
+    await assistantHandler(
+      postRequest({ question: "x".repeat(MAX_ASSISTANT_INPUT_LENGTH + 1), language: "en" }),
+      response,
+      {
+        createRequestId: () => "req-question-too-large"
+      }
+    );
     expect(response.captured).toMatchObject({
       statusCode: 413,
       body: { code: "REQUEST_TOO_LARGE", requestId: "req-question-too-large" }
@@ -249,17 +262,21 @@ describe("assistantHandler", () => {
     const response = createResponse();
     const checkRateLimit = vi.fn(() => ({ allowed: true as const }));
 
-    await assistantHandler({
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        "x-forwarded-for": "203.0.113.5, 198.51.100.1"
+    await assistantHandler(
+      {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-forwarded-for": "203.0.113.5, 198.51.100.1"
+        },
+        body: { question: "Gate route", language: "en" }
       },
-      body: { question: "Gate route", language: "en" }
-    }, response, {
-      geminiApiKey: undefined,
-      checkRateLimit
-    });
+      response,
+      {
+        geminiApiKey: undefined,
+        checkRateLimit
+      }
+    );
 
     expect(checkRateLimit).toHaveBeenCalledWith("203.0.113.5");
   });

@@ -1,0 +1,18 @@
+@media (max-width: 640px) {
+  .hero,
+  main {
+    width: min(100% - 20px, 1120px);
+  }
+
+  .hero {
+    padding-top: 32px;
+  }
+
+  .panel {
+    padding: 18px;
+  }
+
+  button {
+    width: 100%;
+  }
+}

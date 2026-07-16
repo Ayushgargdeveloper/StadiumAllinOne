@@ -1,8 +1,4 @@
-import {
-  assistantHandler,
-  type AssistantApiRequest,
-  type AssistantApiResponse
-} from "../server/assistantHandler";
+import { assistantHandler, type AssistantApiRequest, type AssistantApiResponse } from "../server/assistantHandler";
 
 export {
   assistantHandler,

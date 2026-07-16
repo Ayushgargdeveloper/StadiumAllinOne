@@ -13,7 +13,9 @@ const validProviderPayload = {
 describe("responseValidator", () => {
   it("parses plain JSON and fenced JSON", () => {
     expect(parseGeminiJson(JSON.stringify(validProviderPayload))).toEqual(validProviderPayload);
-    expect(parseGeminiJson(`\`\`\`json\n${JSON.stringify(validProviderPayload)}\n\`\`\``)).toEqual(validProviderPayload);
+    expect(parseGeminiJson(`\`\`\`json\n${JSON.stringify(validProviderPayload)}\n\`\`\``)).toEqual(
+      validProviderPayload
+    );
   });
 
   it("validates structured model output and stamps source mode", () => {

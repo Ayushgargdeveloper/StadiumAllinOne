@@ -32,8 +32,14 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
 
+      - name: Check formatting
+        run: npm run format:check
+
       - name: Lint
         run: npm run lint
+
+      - name: Type-check strict contracts
+        run: npm run typecheck
 
       - name: Test with coverage thresholds
         run: npm run coverage

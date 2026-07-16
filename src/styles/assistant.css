@@ -1,0 +1,42 @@
+.assistant-form {
+  display: grid;
+  gap: 12px;
+}
+
+.form-row {
+  display: grid;
+  gap: 8px;
+  max-width: 360px;
+}
+
+.character-count {
+  margin: 0;
+  color: #52656b;
+  font-size: 0.95rem;
+}
+
+.assistant-response {
+  margin-top: 18px;
+  border-left: 4px solid #0b7285;
+  background: #eef8f6;
+  padding: 14px 16px;
+}
+
+.assistant-response p {
+  margin: 0;
+}
+
+.assistant-status {
+  color: #7c2d12;
+  font-weight: 800;
+  margin-bottom: 10px !important;
+}
+
+.decision-list {
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  margin-top: 14px;
+}
+
+.decision-list div:last-child {
+  grid-column: 1 / -1;
+}

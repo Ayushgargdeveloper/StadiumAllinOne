@@ -1,4 +1,8 @@
-import { type AssistantApiRequestBody, type StadiumAIResponse, type SupportedLanguage } from "../../../shared/contracts/stadium";
+import {
+  type AssistantApiRequestBody,
+  type StadiumAIResponse,
+  type SupportedLanguage
+} from "../../../shared/contracts/stadium";
 import { validateStadiumAIResponse } from "../../../shared/validation/stadiumAIResponse";
 
 export class AssistantClientError extends Error {
@@ -20,7 +24,7 @@ export async function requestAssistantResponse(
     body: JSON.stringify(body)
   });
 
-  const payload = await response.json() as unknown;
+  const payload = (await response.json()) as unknown;
   if (!response.ok) {
     throw new AssistantClientError(readErrorMessage(payload));
   }

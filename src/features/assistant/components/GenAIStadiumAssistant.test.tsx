@@ -41,9 +41,11 @@ describe("GenAIStadiumAssistant", () => {
   it("renders loading state and a successful Gemini response", async () => {
     const user = userEvent.setup();
     let resolveResponse: (response: StadiumAIResponse) => void = () => undefined;
-    mockedRequestAssistantResponse.mockReturnValue(new Promise((resolve) => {
-      resolveResponse = resolve;
-    }));
+    mockedRequestAssistantResponse.mockReturnValue(
+      new Promise((resolve) => {
+        resolveResponse = resolve;
+      })
+    );
     render(<GenAIStadiumAssistant />);
 
     await user.type(screen.getByLabelText("Stadium question"), "Where is the accessible wheelchair entrance?");
@@ -54,10 +56,7 @@ describe("GenAIStadiumAssistant", () => {
     expect(await screen.findByText(geminiResponse.answer)).toBeInTheDocument();
     expect(screen.getByText("gemini")).toBeInTheDocument();
     expect(screen.getByText("medium")).toBeInTheDocument();
-    expect(mockedRequestAssistantResponse).toHaveBeenCalledWith(
-      "Where is the accessible wheelchair entrance?",
-      "en"
-    );
+    expect(mockedRequestAssistantResponse).toHaveBeenCalledWith("Where is the accessible wheelchair entrance?", "en");
   });
 
   it("renders an offline fallback response when the endpoint fails", async () => {

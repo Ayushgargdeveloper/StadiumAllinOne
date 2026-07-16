@@ -7,5 +7,8 @@ export function parseGeminiJson(text: string): unknown {
 }
 
 function stripJsonFence(text: string): string {
-  return text.replace(/^```(?:json)?/i, "").replace(/```$/i, "").trim();
+  return text
+    .replace(/^```(?:json)?/i, "")
+    .replace(/```$/i, "")
+    .trim();
 }

@@ -6,10 +6,13 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint .",
+    "typecheck": "tsc -b --pretty false",
+    "format": "prettier --write \"api/**/*.{ts,tsx}\" \"server/**/*.{ts,tsx}\" \"src/**/*.{ts,tsx,css}\" \".github/**/*.yml\" \"*.{js,json,md,css}\"",
+    "format:check": "prettier --check \"api/**/*.{ts,tsx}\" \"server/**/*.{ts,tsx}\" \"src/**/*.{ts,tsx,css}\" \".github/**/*.yml\" \"*.{js,json,md,css}\"",
+    "lint": "eslint . --max-warnings 0",
     "test": "vitest run",
     "coverage": "vitest run --coverage",
-    "quality": "npm run lint && npm run coverage && npm run build"
+    "quality": "npm run format:check && npm run lint && npm run coverage && npm run build"
   },
   "dependencies": {
     "react": "^18.3.1",
@@ -31,6 +34,7 @@
     "globals": "^15.14.0",
     "jest-axe": "^9.0.0",
     "jsdom": "^25.0.1",
+    "prettier": "^3.9.5",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.18.2",
     "vite": "^6.0.7",

@@ -1,5 +1,10 @@
 import { type SupportedLanguage } from "../src/shared/contracts/stadium";
-import { crowdLocations, inclusiveSupportGroups, operationsAlerts, stadiumContext } from "../src/shared/stadium/stadiumData";
+import {
+  crowdLocations,
+  inclusiveSupportGroups,
+  operationsAlerts,
+  stadiumContext
+} from "../src/shared/stadium/stadiumData";
 
 const languageNames: Record<SupportedLanguage, string> = {
   en: "English",

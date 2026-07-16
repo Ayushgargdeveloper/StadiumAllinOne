@@ -20,11 +20,14 @@ describe("assistantClient", () => {
     } satisfies Partial<Response>);
 
     await expect(requestAssistantResponse("Where is Gate B?", "en", fetcher)).resolves.toEqual(aiResponse);
-    expect(fetcher).toHaveBeenCalledWith("/api/assistant", expect.objectContaining({
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question: "Where is Gate B?", language: "en" })
-    }));
+    expect(fetcher).toHaveBeenCalledWith(
+      "/api/assistant",
+      expect.objectContaining({
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: "Where is Gate B?", language: "en" })
+      })
+    );
   });
 
   it("throws a safe client error when the endpoint rejects the request", async () => {

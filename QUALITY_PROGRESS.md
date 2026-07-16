@@ -162,3 +162,40 @@ Completion notes:
 - Strict TypeScript production build: passing.
 - Production bundle: approximately 159.67 kB JavaScript and 2.78 kB CSS before gzip.
 - `npm audit --audit-level=moderate`: 0 vulnerabilities.
+
+## Phase 6: Measurable Maintainability Recovery
+
+Status: in progress
+
+- [x] Re-scan every production TypeScript module for complexity and size.
+- [x] Split HTTP concerns from assistant orchestration.
+- [x] Split provider and fallback decisions into a dedicated service.
+- [x] Centralize normalized runtime configuration.
+- [x] Replace the obsolete Gemini model with a configurable current stable default.
+- [x] Move Gemini authentication from the URL to the provider-recommended header.
+- [x] Split assistant state, form presentation, and recommendation presentation.
+- [x] Separate offline response policy data from executable domain logic.
+- [x] Split the monolithic stylesheet by concern.
+- [x] Add Prettier and enforce formatting in CI.
+- [x] Enforce complexity, size, depth, parameter-count, hygiene, and dependency-direction rules.
+- [x] Add explicit strict type-checking to CI.
+- [x] Update README and audit claims to match measured repository evidence.
+- [x] Add regression coverage for runtime model configuration and HTTP method metadata.
+- [x] Run the final aggregate quality command and dependency audit.
+- [x] Complete the final diff and repository hygiene review.
+- [ ] Commit, push, and verify the remote GitHub Actions run.
+
+Current checkpoint:
+
+- Tests: 74 passed across 14 files.
+- Coverage: 100% statements, 97.66% branches, 100% functions, 100% lines.
+- Largest production TypeScript module: 137 lines.
+- Production bundle: 160.23 kB JavaScript and 2.78 kB CSS before gzip.
+- Dependency audit: 0 vulnerabilities.
+
+Local completion notes:
+
+- The aggregate formatting, zero-warning lint, coverage, and production-build gate passes.
+- Strict type checking passes independently in browser and server projects.
+- Secret, debug-marker, ignored-rule, dangerous-rendering, stale-path, and whitespace scans are clean.
+- The local Vite server returns the application and fully resolves the split stylesheet.

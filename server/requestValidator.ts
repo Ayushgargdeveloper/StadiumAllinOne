@@ -1,6 +1,10 @@
 import { sanitizeAssistantInput } from "../src/shared/assistant/offlineAssistant";
 import { MAX_ASSISTANT_INPUT_LENGTH } from "../src/shared/config/assistant";
-import { supportedLanguages, type AssistantApiRequestBody, type SupportedLanguage } from "../src/shared/contracts/stadium";
+import {
+  supportedLanguages,
+  type AssistantApiRequestBody,
+  type SupportedLanguage
+} from "../src/shared/contracts/stadium";
 
 export type ValidatedAssistantRequest = {
   question: string;
@@ -8,8 +12,7 @@ export type ValidatedAssistantRequest = {
 };
 
 export type RequestValidationResult =
-  | { valid: true; value: ValidatedAssistantRequest }
-  | { valid: false; statusCode: number; error: string };
+  { valid: true; value: ValidatedAssistantRequest } | { valid: false; statusCode: number; error: string };
 
 export function validateAssistantRequestBody(body: unknown): RequestValidationResult {
   if (!isRecord(body)) {
@@ -26,7 +29,11 @@ export function validateAssistantRequestBody(body: unknown): RequestValidationRe
   }
 
   if (question.length > MAX_ASSISTANT_INPUT_LENGTH) {
-    return { valid: false, statusCode: 413, error: `Question must be ${MAX_ASSISTANT_INPUT_LENGTH} characters or fewer.` };
+    return {
+      valid: false,
+      statusCode: 413,
+      error: `Question must be ${MAX_ASSISTANT_INPUT_LENGTH} characters or fewer.`
+    };
   }
 
   if (typeof body.language !== "string" || !supportedLanguages.includes(body.language as SupportedLanguage)) {

@@ -1,0 +1,55 @@
+.hero,
+main {
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+}
+
+.hero {
+  padding: 48px 0 24px;
+}
+
+.hero h1 {
+  margin: 0;
+  max-width: 760px;
+  font-size: clamp(2.25rem, 6vw, 4.75rem);
+  line-height: 0.98;
+}
+
+.hero p:last-child {
+  max-width: 780px;
+  color: #394a50;
+  font-size: 1.1rem;
+}
+
+main {
+  display: grid;
+  gap: 20px;
+  padding-bottom: 48px;
+}
+
+.panel {
+  border: 1px solid #d7e0dd;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 24px;
+  box-shadow: 0 14px 34px rgb(24 32 38 / 8%);
+}
+
+.section-heading {
+  margin-bottom: 16px;
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  color: #0b7285;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.section-copy {
+  margin: 0 0 18px;
+  max-width: 820px;
+  color: #46575d;
+}

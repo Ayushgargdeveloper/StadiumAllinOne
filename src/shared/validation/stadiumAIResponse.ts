@@ -7,47 +7,58 @@ import {
   type StadiumAIResponse
 } from "../contracts/stadium";
 
+type ParsedResponseFields = {
+  answer: string | null;
+  intent: StadiumAIResponse["intent"] | null;
+  recommendedAction: string | null;
+  urgency: StadiumAIResponse["urgency"] | null;
+  targetUser: StadiumAIResponse["targetUser"] | null;
+  sourceMode: SourceMode | null;
+  alternativeLocation: string | null | undefined;
+};
+
+type ValidResponseFields = {
+  [Field in keyof ParsedResponseFields]: Exclude<ParsedResponseFields[Field], null>;
+};
+
 export function validateStadiumAIResponse(value: unknown, sourceModeOverride?: SourceMode): StadiumAIResponse | null {
   if (!isRecord(value)) {
     return null;
   }
 
-  const answer = readNonEmptyString(value.answer);
-  const intent = readEnum(value.intent, assistantResponseIntents);
-  const recommendedAction = readNonEmptyString(value.recommendedAction);
-  const urgency = readEnum(value.urgency, urgencyLevels);
-  const targetUser = readEnum(value.targetUser, targetUsers);
-  const sourceMode = sourceModeOverride ?? readEnum(value.sourceMode, sourceModes);
-  const alternativeLocation = value.alternativeLocation === undefined
-    ? undefined
-    : readOptionalString(value.alternativeLocation);
+  const fields: ParsedResponseFields = {
+    answer: readNonEmptyString(value.answer),
+    intent: readEnum(value.intent, assistantResponseIntents),
+    recommendedAction: readNonEmptyString(value.recommendedAction),
+    urgency: readEnum(value.urgency, urgencyLevels),
+    targetUser: readEnum(value.targetUser, targetUsers),
+    sourceMode: sourceModeOverride ?? readEnum(value.sourceMode, sourceModes),
+    alternativeLocation:
+      value.alternativeLocation === undefined ? undefined : readOptionalString(value.alternativeLocation)
+  };
 
-  if (
-    answer === null ||
-    intent === null ||
-    recommendedAction === null ||
-    urgency === null ||
-    targetUser === null ||
-    sourceMode === null ||
-    alternativeLocation === null
-  ) {
+  if (!hasValidFields(fields)) {
     return null;
   }
 
   const response: StadiumAIResponse = {
-    answer,
-    intent,
-    recommendedAction,
-    urgency,
-    targetUser,
-    sourceMode
+    answer: fields.answer,
+    intent: fields.intent,
+    recommendedAction: fields.recommendedAction,
+    urgency: fields.urgency,
+    targetUser: fields.targetUser,
+    sourceMode: fields.sourceMode
   };
 
-  if (alternativeLocation !== undefined) {
-    response.alternativeLocation = alternativeLocation;
+  if (fields.alternativeLocation !== undefined) {
+    response.alternativeLocation = fields.alternativeLocation;
   }
 
   return response;
+}
+
+function hasValidFields(fields: ParsedResponseFields): fields is ValidResponseFields {
+  return Object.values(fields).every((field) => field !== null);
 }
 
 function readNonEmptyString(value: unknown): string | null {

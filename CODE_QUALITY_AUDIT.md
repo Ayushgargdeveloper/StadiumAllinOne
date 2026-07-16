@@ -1,166 +1,134 @@
-# StadiumPulse AI Final Code Quality Report
+# StadiumPulse AI Code Quality Audit
 
 Date: 2026-07-17
 
 ## Executive Summary
 
-StadiumPulse AI has completed a five-phase production-quality hardening pass. The application preserves its original UI and challenge behavior while adding explicit module ownership, shared runtime contracts, stricter compiler checks, hardened API boundaries, abuse controls, safe observability hooks, deployment headers, and automated quality gates.
+The repository has completed a maintainability-focused audit across browser code, shared domain logic, server orchestration, provider integration, tests, configuration, CI, documentation, and deployment settings. User-facing behavior is preserved, while large multi-responsibility modules have been replaced with explicit boundaries and measurable quality limits.
 
-Final verified state:
+No evaluator score is guaranteed. The final assessment below is based only on commands and repository evidence that another agent can reproduce.
 
-- `npm run quality`: passing
-- `npm audit --audit-level=moderate`: 0 vulnerabilities
-- 70 tests passing across 13 files
-- 100% statements, functions, and lines
-- 98.18% branch coverage
-- Strict browser and server TypeScript builds passing
-- Production JavaScript: 159.67 kB before gzip, 50.92 kB after gzip
+## Verified State
+
+- `npm run format:check`: passing
+- `npm run lint`: passing with production maintainability and dependency-boundary rules
+- `npm run typecheck`: passing under strict browser and server configurations
+- 74 tests passing across 14 files
+- 100% statements, functions, and lines; 97.66% branches
+- `npm run build`: passing
+- Production assets: 160.23 kB JavaScript and 2.78 kB CSS before gzip
+- `npm audit --audit-level=moderate`: zero vulnerabilities
+- Largest production TypeScript module: 137 lines
 - Runtime dependencies: React and React DOM only
 
-Estimated code-quality maturity: approximately 98%.
+## Findings Resolved
 
-## Evaluation Criteria
+### 1. Multi-Responsibility Server Handler
 
-| Criterion | Final evidence |
-| --- | --- |
-| Code Quality | Feature-first ownership, shared contracts and platform-neutral domain logic, thin deployment adapter, strict TypeScript, strict ESLint, typed errors, colocated tests, and CI enforcement. |
-| Security | Server-only API key, layered request validation, bounded rate limiting, provider timeout, untrusted prompt-data delimiting, runtime model-response validation, safe error payloads, request IDs, CSP, HSTS, and browser permission restrictions. |
-| Efficiency | Minimal runtime dependencies, native provider `fetch`, no browser AI SDK, no polling or background timers, compact static context, and a stable 50.92 kB gzipped JavaScript bundle. |
-| Testing | 70 focused unit, component, accessibility, server, provider, and API tests with enforced coverage thresholds. |
-| Accessibility | Semantic sections and headings, explicit labels, accessible descriptions, visible focus, live loading/fallback announcements, and automated `jest-axe` checks. |
-| Problem Alignment | GenAI stadium decision support covers navigation, crowd pressure, accessibility, transportation, medical assistance, sustainability, volunteer coordination, venue operations, and three response languages. |
+The original assistant handler mixed HTTP parsing, request validation, provider configuration, Gemini execution, model validation, fallback classification, telemetry, rate limiting, and response serialization.
 
-## Final Architecture
+It is now separated into:
 
-```text
-.
-|-- api/
-|   |-- assistant.ts              # Thin Vercel adapter
-|   `-- assistant.test.ts
-|-- server/
-|   |-- assistantHandler.ts       # Request orchestration
-|   |-- apiErrors.ts              # Stable error contract
-|   |-- geminiClient.ts           # Provider boundary and timeout
-|   |-- promptBuilder.ts          # Constrained prompt construction
-|   |-- rateLimiter.ts            # Bounded abuse-control state
-|   |-- requestValidator.ts       # Request boundary validation
-|   `-- responseValidator.ts      # JSON parsing and shared validation export
-|-- src/
-|   |-- features/
-|   |   |-- assistant/{components,services}/
-|   |   |-- crowd/
-|   |   |-- inclusive-support/
-|   |   `-- operations/
-|   |-- shared/
-|   |   |-- assistant/            # Cross-runtime offline domain
-|   |   |-- config/
-|   |   |-- contracts/
-|   |   |-- stadium/
-|   |   `-- validation/
-|   |-- App.tsx                   # Feature composition only
-|   `-- main.tsx
-|-- .github/workflows/ci.yml
-|-- vercel.json
-`-- vite.config.ts
-```
+- `assistantHandler.ts`: request orchestration only
+- `assistantHttp.ts`: HTTP parsing, client identity, errors, and response headers
+- `assistantService.ts`: provider versus fallback decisions
+- `geminiClient.ts`: authenticated provider transport and response extraction
+- `runtimeConfig.ts`: normalized API key and validated model configuration
 
-Dependency direction is explicit:
+The public adapter remains thin and all prior API behavior is covered by regression tests.
 
-1. `api/assistant.ts` delegates to server orchestration.
-2. Server modules depend on server utilities and platform-neutral shared modules.
-3. `App.tsx` composes features through public `index.ts` entry points.
-4. Features depend on their own internals and shared modules.
-5. Shared modules do not depend on UI features.
+### 2. Oversized Assistant UI
 
-## Code Quality Controls
+The assistant component previously owned state, network workflow, fallback behavior, form markup, and recommendation rendering. It now composes:
 
-### Type And Contract Safety
+- `useAssistant.ts`: state and request lifecycle
+- `AssistantForm.tsx`: controlled, accessible input
+- `AssistantRecommendation.tsx`: structured decision rendering
+- `GenAIStadiumAssistant.tsx`: section composition
 
-- Shared `StadiumAIResponse` runtime validation is used by both server and browser boundaries.
-- API requests and responses use explicit TypeScript contracts.
-- API failures use stable error codes and generated request IDs.
-- `exactOptionalPropertyTypes` prevents optional fields from silently carrying `undefined`.
-- `noUncheckedIndexedAccess` protects array and record access.
-- Unused code, implicit returns, and switch fallthrough are compiler errors.
-- Successful endpoint payloads are validated before reaching React state.
+The integrated component tests still cover loading, Gemini success, multilingual selection, and offline fallback.
 
-### API Reliability
+### 3. Mixed Offline Logic And Content
 
-- Only `POST` with the exact JSON media type is accepted.
-- Raw request bodies and validated questions have independent size limits.
-- Questions are sanitized and languages are allow-listed.
-- Gemini requests use an abort timeout and normalized server-side credentials.
-- Provider failures, timeouts, malformed JSON, and invalid model schemas use deterministic offline fallback.
-- Fallback reasons are classified without recording questions, model output, secrets, or raw provider errors.
-- Observability and rate-limit implementations are injectable without changing the endpoint contract.
+Multilingual text, intent keywords, urgency policy, target users, and alternative locations moved to `offlineAssistantRules.ts`. `offlineAssistant.ts` now contains only sanitization, intent ranking, result construction, and fallback orchestration.
 
-### Security
+### 4. Monolithic Styling
 
-- `GEMINI_API_KEY` is never exposed through a `VITE_` variable.
-- User requests are serialized as untrusted JSON inside the constrained model prompt.
-- Model output is treated as untrusted data and must pass runtime validation.
-- Rate limiting happens before provider work and uses bounded in-memory state by default.
-- Responses disable caching and include `X-Request-Id`.
-- `vercel.json` applies CSP, anti-framing, HSTS, MIME-sniffing protection, referrer privacy, and a restrictive permissions policy.
-- The UI contains no `dangerouslySetInnerHTML`, `eval`, or dynamic code execution.
-- Dependency audit reports zero vulnerabilities.
+The former 276-line stylesheet is now a small import manifest over base, layout, assistant, stadium-module, and responsive styles. Selectors and rendered behavior are unchanged.
 
-### Scalability And Efficiency
+### 5. Unenforced Maintainability
 
-- Each user-facing capability has a clear feature owner.
-- Cross-runtime contracts and domain behavior have one shared implementation.
-- The deployment entry point is isolated from orchestration and provider code.
-- The rate-limit hook supports replacement with a distributed store at multi-instance scale.
-- No database, WebSocket, map SDK, polling loop, or heavyweight AI client is included.
-- CI cancels superseded runs and has least-privilege repository permissions.
+The repository now fails lint when production code exceeds:
 
-## Test Evidence
+- Complexity 8
+- 60 lines per function
+- 200 lines per module
+- Nesting depth 3
+- Four function parameters
 
-The 70-test suite covers:
+It also rejects console output, duplicate imports, warning markers, client/server boundary violations, and shared-to-feature dependency inversions. Prettier is enforced locally and in CI.
 
-- Application rendering and automated accessibility checks
-- Crowd, operations, and inclusive-support modules
-- Assistant loading, Gemini success, and offline fallback states
-- Multilingual intent detection and input sanitization
-- Client rejection of malformed successful API payloads
-- Request method, media type, JSON parsing, size, shape, and language validation
-- Typed API errors, request IDs, no-store headers, and rate-limit responses
-- Forwarded client identifiers and bounded rate-limit state
-- Provider success, failure, invalid response, and timeout handling
-- Prompt constraints and prompt-injection delimiting
-- Model JSON parsing and response-schema validation
-- Privacy-safe fallback reason classification and telemetry-failure resilience
+### 6. Stale Provider Configuration
 
-Coverage thresholds are enforced in `vite.config.ts`:
+The provider client no longer targets the obsolete `gemini-1.5-flash` identifier. It defaults to the current stable `gemini-3.5-flash`, accepts a validated server-side override, and sends the API key in Google's recommended `x-goog-api-key` header instead of the request URL.
 
-- Statements: 98% minimum
-- Branches: 95% minimum
-- Functions: 98% minimum
-- Lines: 98% minimum
+## Architecture Assessment
 
-Current measured coverage exceeds every threshold.
+The dependency graph is acyclic at the ownership level:
+
+1. Deployment adapter to server handler
+2. Handler to HTTP, service, and rate-limit ports
+3. Service to prompt, provider, response validation, and shared offline domain
+4. React features to their own hooks/services and shared contracts
+5. Shared modules to other shared modules only
+
+The serverless handler exposes rate-limit and fallback-observer injection points. The default in-memory limiter is intentionally bounded; a distributed implementation can replace it for multi-instance deployments without changing the endpoint or UI contract.
+
+## Reliability And Security Assessment
+
+- API key remains server-only and is normalized before use.
+- Gemini authentication uses a header, keeping secrets out of request URLs.
+- Method, media type, raw JSON size, request shape, language, and sanitized length are validated.
+- User input is serialized as untrusted JSON within a constrained prompt.
+- Provider calls have an abort timeout.
+- Model output is parsed and runtime-validated before reaching React state.
+- Provider and model failures use deterministic offline output.
+- Stable error codes, request IDs, no-store headers, and `Allow: POST` support diagnosis without exposing internals.
+- Rate limiting occurs before provider work and bounds identifier storage.
+- CSP, HSTS, anti-framing, MIME, referrer, and permissions headers are deployment-configured.
+- No dangerous HTML injection, dynamic execution, debug logging, ignored TypeScript checks, or committed secret was found.
+
+## Test Assessment
+
+The suite covers application accessibility, feature rendering, assistant state transitions, client response validation, offline multilingual behavior, request boundaries, API errors, rate limiting, provider timeout/failure, prompt constraints, model schema validation, runtime configuration, and telemetry resilience.
+
+Coverage thresholds are executable configuration, not documentation-only claims:
+
+| Metric     | Minimum | Current |
+| ---------- | ------: | ------: |
+| Statements |     98% |    100% |
+| Branches   |     95% |  97.66% |
+| Functions  |     98% |    100% |
+| Lines      |     98% |    100% |
 
 ## Continuous Verification
 
-The local pre-submission command is:
+Local submission gate:
 
 ```bash
+npm ci
 npm run quality
 npm audit --audit-level=moderate
 ```
 
-GitHub Actions performs a locked `npm ci` install and runs lint, coverage, production build, and dependency audit for every pull request and push to `main`.
+GitHub Actions uses a locked install, read-only repository permission, superseded-run cancellation, formatting, lint, explicit strict type checking, coverage, production build, and dependency audit.
 
-## Implementation Summary
+## Residual Production Extensions
 
-1. Shared browser/server response validation and malformed-payload regression coverage.
-2. Typed API errors, request tracing, fallback classification, and bounded rate limiting.
-3. CI enforcement and Vercel production security headers.
-4. Feature-first architecture and stricter browser/server TypeScript settings.
-5. Thin API adapter, prompt-injection boundaries, exact media-type parsing, normalized configuration, and final repository hygiene review.
+These are scale-dependent extension points rather than blockers for the current stateless demo:
 
-## Final Assessment
+- Replace the injected in-memory limiter with a shared store for multi-region enforcement.
+- Connect the privacy-safe fallback observer to an external telemetry sink.
+- Supply real venue feeds only when authoritative integrations and data contracts exist.
 
-All six evaluation categories shown by the hackathon evaluator are directly represented by implementation evidence in the repository. The code-quality work is complete for submission, with no known correctness, security, test, accessibility, or architecture blocker in the current scope.
-
-The design also preserves clear production extension points for a distributed rate-limit store and an external privacy-safe telemetry sink without requiring changes to the public API or UI.
+The current repository makes none of those integrations implicitly or through unverifiable claims.
