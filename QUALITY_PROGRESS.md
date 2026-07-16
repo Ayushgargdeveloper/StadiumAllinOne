@@ -165,7 +165,7 @@ Completion notes:
 
 ## Phase 6: Measurable Maintainability Recovery
 
-Status: in progress
+Status: complete
 
 - [x] Re-scan every production TypeScript module for complexity and size.
 - [x] Split HTTP concerns from assistant orchestration.
@@ -183,7 +183,7 @@ Status: in progress
 - [x] Add regression coverage for runtime model configuration and HTTP method metadata.
 - [x] Run the final aggregate quality command and dependency audit.
 - [x] Complete the final diff and repository hygiene review.
-- [ ] Commit, push, and verify the remote GitHub Actions run.
+- [x] Commit, push, and verify the remote GitHub Actions run.
 
 Current checkpoint:
 
@@ -199,3 +199,5 @@ Local completion notes:
 - Strict type checking passes independently in browser and server projects.
 - Secret, debug-marker, ignored-rule, dangerous-rendering, stale-path, and whitespace scans are clean.
 - The local Vite server returns the application and fully resolves the split stylesheet.
+- Maintainability commit `142b3a4` was pushed to `origin/main`.
+- GitHub Actions run `29538158210` completed successfully for that exact commit.
